@@ -1,0 +1,29 @@
+# Données locales (base SQLite, médias des projets)
+/data/
+/projets/
+
+# Moteurs installés
+/moteurs/
+/dist-release/
+
+# Lanceurs propres à une machine (chemins des moteurs, etc.)
+/*.local.bat
+
+# Python
+__pycache__/
+*.py[cod]
+/server/.venv/
+/server/.pytest_cache/
+
+# Node
+/ui/node_modules/
+/ui/dist/
+
+# Outils et journaux
+/logs/
+*.log
+.codegraph/
+.claude/checkpoint.json
+
+# Ledgers des runs Flotte
+.flotte/

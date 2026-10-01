@@ -1,0 +1,26 @@
+{
+  "bonsai": {
+    "vram_avant_mo": 2211,
+    "demarrage": {
+      "pret": true,
+      "vram_chargee_mo": 11651
+    }
+  },
+  "maestro": {
+    "vram_avant_mo": 1563,
+    "qwen_image": {"statut": "completed", "vram_pic_mo": 4488},
+    "h3_segment_124": {"statut": "completed", "vram_pic_mo": 7631},
+    "h3_offset_124": {"statut": "completed", "vram_pic_mo": 8092},
+    "h3_segment_243_paysage": {"statut": "completed", "vram_pic_mo": 10303},
+    "h3_segment_243_portrait": {"statut": "completed", "vram_pic_mo": 8251},
+    "ltx23_121": {"statut": "completed", "vram_pic_mo": 6006},
+    "ltx25_121": {"statut": "completed", "vram_pic_mo": 4874},
+    "flashvsr": {"statut": "completed", "vram_pic_mo": 6774},
+    "release_model": {"resultat": true, "vram_apres_mo": 1844}
+  },
+  "dlss5": {
+    "vram_avant_mo": 1539,
+    "neural_rendering": {"code_retour": 0, "vram_pic_mo": 2584},
+    "interpolation": {"code_retour": 0, "vram_pic_mo": 2831}
+  }
+}

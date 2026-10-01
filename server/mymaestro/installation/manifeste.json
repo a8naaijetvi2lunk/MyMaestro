@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "moteurs": [
+    {
+      "id": "ffmpeg", "libelle": "ffmpeg", "requis": true,
+      "version": "n9.0.1-11-ge47273f4d9 (BtbN autobuild-2026-08-31-13-27, LGPL)",
+      "espace_mo": 500,
+      "fichiers": [
+        {"nom": "ffmpeg.zip", "taille": 147007942,
+         "sha256": "2484854ad6988d34560f4e6ea7a6ecb9dde0af7c229d2591815d056b04ec4f56",
+         "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-08-31-13-27/ffmpeg-n9.0.1-11-ge47273f4d9-win64-lgpl-9.0.zip"}
+      ],
+      "etapes": [
+        {"type": "extraire", "fichier": "ffmpeg.zip", "membres": ["*/bin/ffmpeg.exe", "*/bin/ffprobe.exe"], "aplatir": true, "vers": "."}
+      ],
+      "controle": ["ffmpeg.exe", "ffprobe.exe"]
+    },
+    {
+      "id": "maestro", "libelle": "Maestro", "requis": true,
+      "version": "fork public a8naaijetvi2lunk/Maestro-redit-iv v1.8.1-mm1",
+      "espace_mo": 110000,
+      "fichiers": [
+        {"nom": "maestro.zip", "taille": 11804779,
+         "sha256": "f3c875a39c5e7ab8133449d384831fd786c8e40a515605c6c4238cb92962d627",
+         "url": "https://github.com/a8naaijetvi2lunk/Maestro-redit-iv/releases/download/v1.8.1-mm1/Maestro-redit-iv-v1.8.1-mm1.zip"}
+      ],
+      "etapes": [
+        {"type": "extraire", "fichier": "maestro.zip", "retirer_racine": true, "vers": "."},
+        {"type": "commande", "cwd": "app", "argv": ["{uv}", "venv", "--clear", "--python", "3.10", "env"], "libelle": "Création de l'environnement Python"},
+        {"type": "commande", "cwd": "app", "argv": ["{uv}", "pip", "install", "--python", "env/Scripts/python.exe", "-r", "requirements.txt", "--index-strategy", "unsafe-best-match"], "libelle": "Installation des dépendances de Maestro"},
+        {"type": "commande", "cwd": "app", "argv": ["{uv}", "pip", "install", "--python", "env/Scripts/python.exe", "hf-xet", "pip"], "libelle": "Installation de hf-xet et pip"},
+        {"type": "commande", "cwd": "app", "argv": ["{uv}", "pip", "install", "--python", "env/Scripts/python.exe", "torch==2.7.1", "torchvision==0.22.1", "torchaudio==2.7.1", "xformers==0.0.30", "--index-url", "https://download.pytorch.org/whl/cu128", "--force-reinstall", "--no-deps"], "libelle": "Installation de PyTorch (CUDA 12.8)"},
+        {"type": "commande", "cwd": "app", "argv": ["{uv}", "pip", "install", "--python", "env/Scripts/python.exe", "triton-windows==3.3.1.post19"], "libelle": "Installation de Triton"},
+        {"type": "commande", "cwd": "app", "argv": ["{uv}", "pip", "install", "--python", "env/Scripts/python.exe", "https://github.com/woct0rdho/SageAttention/releases/download/v2.2.0-windows/sageattention-2.2.0+cu128torch2.7.1-cp310-cp310-win_amd64.whl"], "libelle": "Installation de SageAttention"},
+        {"type": "precharger_maestro", "modeles": ["qwen_image_edit_2511_20B_fp8_lightning_8step", "ltx2_22B_distilled_1_1_omninft"]}
+      ],
+      "controle": ["app/launch.py", "app/env/Scripts/python.exe"],
+      "note": "Modèles préchargés : Qwen Image Edit (≈ 31 Go) et LTX-2.3 OmniNFT (≈ 44 Go), plus ≈ 5 Go d'assets partagés. H3 (≈ 34 Go), FlashVSR (≈ 4 Go), MMAudio (≈ 11 Go) et Whisper (≈ 0,5 Go) se téléchargent au premier usage."
+    },
+    {
+      "id": "dlss5", "libelle": "DLSS 5 Visual Enhancer", "requis": false,
+      "version": "v7.0 (Merserk)",
+      "espace_mo": 3000,
+      "fichiers": [
+        {"nom": "dlss5.zip", "taille": 543166673,
+         "sha256": "995a3c8ec73cac1dce8b329279b2ec66f4b9f52048b7d119dcb46c6b7e0914cb",
+         "url": "https://github.com/Merserk/dlss5-visual-enhancer/releases/download/v7.0/DLSS.5.Visual.Enhancer.v7.0.zip"}
+      ],
+      "etapes": [
+        {"type": "extraire", "fichier": "dlss5.zip", "vers": "."}
+      ],
+      "controle": ["app.py", "bin/python-3.13.15-embed-amd64/python.exe"]
+    },
+    {
+      "id": "bonsai", "libelle": "Bonsai 2 (llama.cpp PrismML)", "requis": false,
+      "version": "llama.cpp prism-b10709-9a9394a (CUDA 12.4) + Ternary-Bonsai-2-27B-PQ2_0 @ 6ed5e12",
+      "espace_mo": 9500,
+      "fichiers": [
+        {"nom": "llama.zip", "taille": 253442371,
+         "sha256": "f565c8428c1f108311f65ed97f02425188b3aa3c745c2bc597521bbd24bcbbc9",
+         "url": "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10709-9a9394a/llama-prism-b10709-9a9394a-bin-win-cuda-12.4-x64.zip"},
+        {"nom": "cudart.zip", "taille": 391443627,
+         "sha256": "8c79a9b226de4b3cacfd1f83d24f962d0773be79f1e7b75c6af4ded7e32ae1d6",
+         "url": "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10709-9a9394a/cudart-llama-bin-win-cuda-12.4-x64.zip"},
+        {"nom": "models/Ternary-Bonsai-2-27B-PQ2_0.gguf", "taille": 7206168928,
+         "sha256": "3907dc1658db1f78a9826bf8d5bcb8dc65db0d466388937af57f2294fae62ec1",
+         "url": "https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf/resolve/6ed5e12bf84b7a63069882c91dd9e9218647d17b/Ternary-Bonsai-2-27B-PQ2_0.gguf"}
+      ],
+      "etapes": [
+        {"type": "extraire", "fichier": "llama.zip", "vers": "bin"},
+        {"type": "extraire", "fichier": "cudart.zip", "vers": "bin"},
+        {"type": "copier_ressource", "ressource": "bonsai2-chat-template.jinja", "vers": "models/bonsai2-chat-template.jinja"}
+      ],
+      "controle": ["bin/llama-server.exe", "models/Ternary-Bonsai-2-27B-PQ2_0.gguf", "models/bonsai2-chat-template.jinja"]
+    },
+    {
+      "id": "claude", "libelle": "Claude Code (CLI)", "requis": false,
+      "version": "installeur officiel d'Anthropic",
+      "espace_mo": 500,
+      "fichiers": [],
+      "etapes": [
+        {"type": "installeur_claude"}
+      ],
+      "controle": []
+    }
+  ]
+}

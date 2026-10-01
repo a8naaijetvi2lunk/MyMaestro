@@ -1,0 +1,5095 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MyMaestro",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/sante": {
+      "get": {
+        "tags": [
+          "système"
+        ],
+        "summary": "Sante",
+        "operationId": "sante_api_sante_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sante"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/materiel": {
+      "get": {
+        "tags": [
+          "système"
+        ],
+        "summary": "Materiel",
+        "operationId": "materiel_api_materiel_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InfosMateriel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets": {
+      "get": {
+        "tags": [
+          "projets"
+        ],
+        "summary": "Lister Projets",
+        "operationId": "lister_projets_api_projets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ResumeProjet"
+                  },
+                  "type": "array",
+                  "title": "Response Lister Projets Api Projets Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Creer Projet",
+        "operationId": "creer_projet_api_projets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjetEntree"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}": {
+      "get": {
+        "tags": [
+          "projets"
+        ],
+        "summary": "Lire Projet",
+        "operationId": "lire_projet_api_projets__projet_id__get",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/modules": {
+      "get": {
+        "tags": [
+          "modules"
+        ],
+        "summary": "Lister Modules",
+        "operationId": "lister_modules_api_modules_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ManifesteModule"
+                  },
+                  "type": "array",
+                  "title": "Response Lister Modules Api Modules Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/modules/{module_id}/defauts": {
+      "get": {
+        "tags": [
+          "modules"
+        ],
+        "summary": "Defauts Module",
+        "description": "Réglages par défaut complets d'un module (point de départ d'une nouvelle recette).",
+        "operationId": "defauts_module_api_modules__module_id__defauts_get",
+        "parameters": [
+          {
+            "name": "module_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Module Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Defauts Module Api Modules  Module Id  Defauts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rendu": {
+      "get": {
+        "tags": [
+          "modules"
+        ],
+        "summary": "Infos Rendu",
+        "description": "Résolution de rendu par moteur, plafond de plan et sortie pour un format (carte « Rendu » de la recette).",
+        "operationId": "infos_rendu_api_rendu_get",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/FormatImage",
+              "default": "16:9"
+            }
+          },
+          {
+            "name": "h3",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Definition"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "H3"
+            }
+          },
+          {
+            "name": "ltx23",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Definition"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ltx23"
+            }
+          },
+          {
+            "name": "ltx25",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Definition"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ltx25"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InfosRendu"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recettes": {
+      "get": {
+        "tags": [
+          "recettes"
+        ],
+        "summary": "Lister Recettes",
+        "operationId": "lister_recettes_api_recettes_get",
+        "parameters": [
+          {
+            "name": "module",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Module"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Recette"
+                  },
+                  "title": "Response Lister Recettes Api Recettes Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "recettes"
+        ],
+        "summary": "Creer Recette",
+        "operationId": "creer_recette_api_recettes_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecetteEntree"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recette"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recettes/{recette_id}": {
+      "put": {
+        "tags": [
+          "recettes"
+        ],
+        "summary": "Modifier Recette",
+        "operationId": "modifier_recette_api_recettes__recette_id__put",
+        "parameters": [
+          {
+            "name": "recette_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Recette Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecetteEntree"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recette"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bibliotheque": {
+      "get": {
+        "tags": [
+          "bibliothèque"
+        ],
+        "summary": "Lister Fiches",
+        "operationId": "lister_fiches_api_bibliotheque_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FicheBibliotheque"
+                  },
+                  "type": "array",
+                  "title": "Response Lister Fiches Api Bibliotheque Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "bibliothèque"
+        ],
+        "summary": "Creer Fiche",
+        "operationId": "creer_fiche_api_bibliotheque_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FicheEntree"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FicheBibliotheque"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bibliotheque/{fiche_id}": {
+      "put": {
+        "tags": [
+          "bibliothèque"
+        ],
+        "summary": "Modifier Fiche",
+        "operationId": "modifier_fiche_api_bibliotheque__fiche_id__put",
+        "parameters": [
+          {
+            "name": "fiche_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fiche Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FicheEntree"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FicheBibliotheque"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "bibliothèque"
+        ],
+        "summary": "Supprimer Fiche",
+        "operationId": "supprimer_fiche_api_bibliotheque__fiche_id__delete",
+        "parameters": [
+          {
+            "name": "fiche_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fiche Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bibliotheque/{fiche_id}/images/{role}": {
+      "put": {
+        "tags": [
+          "bibliothèque"
+        ],
+        "summary": "Televerser Image Fiche",
+        "description": "Image de référence d'une fiche, en corps brut (PNG, JPEG ou WebP) ; remplace celle du même rôle.",
+        "operationId": "televerser_image_fiche_api_bibliotheque__fiche_id__images__role__put",
+        "parameters": [
+          {
+            "name": "fiche_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fiche Id"
+            }
+          },
+          {
+            "name": "role",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoleImageFiche"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FicheBibliotheque"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "bibliothèque"
+        ],
+        "summary": "Supprimer Image Fiche",
+        "operationId": "supprimer_image_fiche_api_bibliotheque__fiche_id__images__role__delete",
+        "parameters": [
+          {
+            "name": "fiche_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fiche Id"
+            }
+          },
+          {
+            "name": "role",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/RoleImageFiche"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/medias/{chemin}": {
+      "get": {
+        "tags": [
+          "médias"
+        ],
+        "summary": "Lire Media",
+        "description": "Sert un média ; le chemin est résolu et borné au dossier des médias.",
+        "operationId": "lire_media_api_medias__chemin__get",
+        "parameters": [
+          {
+            "name": "chemin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Chemin"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/file": {
+      "get": {
+        "tags": [
+          "file"
+        ],
+        "summary": "Lire File",
+        "operationId": "lire_file_api_file_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatFile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/file/pause": {
+      "post": {
+        "tags": [
+          "file"
+        ],
+        "summary": "Mettre File En Pause",
+        "description": "Le job en cours se termine, aucun autre ne démarre avant la reprise.",
+        "operationId": "mettre_file_en_pause_api_file_pause_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatFile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/file/reprendre": {
+      "post": {
+        "tags": [
+          "file"
+        ],
+        "summary": "Reprendre File",
+        "operationId": "reprendre_file_api_file_reprendre_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatFile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/file/jobs/{job_id}/relancer": {
+      "post": {
+        "tags": [
+          "file"
+        ],
+        "summary": "Relancer Job",
+        "operationId": "relancer_job_api_file_jobs__job_id__relancer_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/file/jobs/{job_id}/annuler": {
+      "post": {
+        "tags": [
+          "file"
+        ],
+        "summary": "Annuler Job",
+        "operationId": "annuler_job_api_file_jobs__job_id__annuler_post",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/moteurs": {
+      "get": {
+        "tags": [
+          "moteurs"
+        ],
+        "summary": "Lister Moteurs",
+        "operationId": "lister_moteurs_api_moteurs_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatMoteurs"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/moteurs/annuler": {
+      "post": {
+        "tags": [
+          "moteurs"
+        ],
+        "summary": "Annuler Installation",
+        "operationId": "annuler_installation_api_moteurs_annuler_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/moteurs/claude/connecter": {
+      "post": {
+        "tags": [
+          "moteurs"
+        ],
+        "summary": "Connecter Claude",
+        "operationId": "connecter_claude_api_moteurs_claude_connecter_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/moteurs/{moteur_id}/installer": {
+      "post": {
+        "tags": [
+          "moteurs"
+        ],
+        "summary": "Installer Moteur",
+        "description": "Démarre l'installation (progression par les événements `installation`). 409 : déjà en cours, moteur externe ou\ninstallé, espace disque insuffisant.",
+        "operationId": "installer_moteur_api_moteurs__moteur_id__installer_post",
+        "parameters": [
+          {
+            "name": "moteur_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Moteur Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evenements": {
+      "get": {
+        "tags": [
+          "file"
+        ],
+        "summary": "Evenements",
+        "operationId": "evenements_api_evenements_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/event-stream": {
+                "itemSchema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    },
+                    "event": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "retry": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/chanson": {
+      "put": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Televerser Chanson",
+        "description": "Chanson en corps brut ; sa durée est lue par ffprobe, un fichier illisible est refusé et supprimé.",
+        "operationId": "televerser_chanson_api_projets__projet_id__chanson_put",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/director": {
+      "get": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Lire Etat Director",
+        "operationId": "lire_etat_director_api_projets__projet_id__director_get",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatDirector"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/phases/{phase}/lancer": {
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Lancer Phase",
+        "operationId": "lancer_phase_api_projets__projet_id__phases__phase__lancer_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "phase",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Phase"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/phases/{phase}/valider": {
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Valider Phase",
+        "operationId": "valider_phase_api_projets__projet_id__phases__phase__valider_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "phase",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Phase"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/ecriture/brief": {
+      "put": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Definir Brief",
+        "operationId": "definir_brief_api_projets__projet_id__ecriture_brief_put",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Brief-Input"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatDirector"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/ecriture/concepts": {
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Proposer Concepts",
+        "operationId": "proposer_concepts_api_projets__projet_id__ecriture_concepts_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatDirector"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/ecriture/concepts/{indice}/retenir": {
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Retenir Concept",
+        "operationId": "retenir_concept_api_projets__projet_id__ecriture_concepts__indice__retenir_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "indice",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Indice"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatDirector"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/ecriture/chat": {
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Envoyer Message",
+        "operationId": "envoyer_message_api_projets__projet_id__ecriture_chat_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageEntree"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatDirector"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/ecriture/decoupage": {
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Ecrire Decoupage",
+        "operationId": "ecrire_decoupage_api_projets__projet_id__ecriture_decoupage_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatDirector"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/analyse/lignes": {
+      "put": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Modifier Lignes",
+        "operationId": "modifier_lignes_api_projets__projet_id__analyse_lignes_put",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/LigneParoles"
+                },
+                "title": "Lignes"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EtatDirector"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/compatibilites": {
+      "get": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Lire Compatibilites",
+        "operationId": "lire_compatibilites_api_projets__projet_id__compatibilites_get",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/CompatibiliteMoteur"
+                    }
+                  },
+                  "title": "Response Lire Compatibilites Api Projets  Projet Id  Compatibilites Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/plans/{plan_id}": {
+      "patch": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Modifier Plan",
+        "operationId": "modifier_plan_api_projets__projet_id__plans__plan_id__patch",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanModification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plan"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/plans/{plan_id}/image/refaire": {
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Refaire Image",
+        "operationId": "refaire_image_api_projets__projet_id__plans__plan_id__image_refaire_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/medias/{chemin}": {
+      "get": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Lire Media Projet",
+        "operationId": "lire_media_projet_api_projets__projet_id__medias__chemin__get",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "chemin",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Chemin"
+            }
+          },
+          {
+            "name": "telecharger",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Telecharger"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/actions": {
+      "get": {
+        "tags": [
+          "director",
+          "file"
+        ],
+        "summary": "Lister Actions",
+        "operationId": "lister_actions_api_projets__projet_id__actions_get",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionProgrammee"
+                  },
+                  "title": "Response Lister Actions Api Projets  Projet Id  Actions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "director",
+          "file"
+        ],
+        "summary": "Programmer Action",
+        "operationId": "programmer_action_api_projets__projet_id__actions_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionEntree"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionProgrammee"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/actions/lancer": {
+      "post": {
+        "tags": [
+          "director",
+          "file"
+        ],
+        "summary": "Lancer Actions",
+        "operationId": "lancer_actions_api_projets__projet_id__actions_lancer_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lancement"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/actions/{action_id}": {
+      "delete": {
+        "tags": [
+          "director",
+          "file"
+        ],
+        "summary": "Retirer Action",
+        "operationId": "retirer_action_api_projets__projet_id__actions__action_id__delete",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "action_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Action Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/timeline": {
+      "get": {
+        "tags": [
+          "director",
+          "projets"
+        ],
+        "summary": "Lire Timeline",
+        "operationId": "lire_timeline_api_projets__projet_id__timeline_get",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/timeline/segments": {
+      "get": {
+        "tags": [
+          "director",
+          "projets"
+        ],
+        "summary": "Lire Segments",
+        "operationId": "lire_segments_api_projets__projet_id__timeline_segments_get",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Segment"
+                  },
+                  "title": "Response Lire Segments Api Projets  Projet Id  Timeline Segments Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/timeline/clips/{clip_id}": {
+      "patch": {
+        "tags": [
+          "director",
+          "projets"
+        ],
+        "summary": "Modifier Clip",
+        "operationId": "modifier_clip_api_projets__projet_id__timeline_clips__clip_id__patch",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Clip Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClipModification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "director",
+          "projets"
+        ],
+        "summary": "Supprimer Clip",
+        "operationId": "supprimer_clip_api_projets__projet_id__timeline_clips__clip_id__delete",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Clip Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/timeline/clips/{clip_id}/couper": {
+      "post": {
+        "tags": [
+          "director",
+          "projets"
+        ],
+        "summary": "Couper Clip",
+        "operationId": "couper_clip_api_projets__projet_id__timeline_clips__clip_id__couper_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "clip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Clip Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Coupe"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/timeline/pistes": {
+      "post": {
+        "tags": [
+          "director",
+          "projets"
+        ],
+        "summary": "Ajouter Piste",
+        "operationId": "ajouter_piste_api_projets__projet_id__timeline_pistes_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NouvellePiste"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/plans/{plan_id}/prise-active": {
+      "put": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Choisir Prise",
+        "operationId": "choisir_prise_api_projets__projet_id__plans__plan_id__prise_active_put",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChoixPrise"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/prises/{prise_id}/sortie-active": {
+      "put": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Choisir Sortie",
+        "operationId": "choisir_sortie_api_projets__projet_id__prises__prise_id__sortie_active_put",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "prise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prise Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChoixSortie"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/prises/nettoyer": {
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Nettoyer Prises",
+        "operationId": "nettoyer_prises_api_projets__projet_id__prises_nettoyer_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Nettoyage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/sons": {
+      "put": {
+        "tags": [
+          "director",
+          "projets"
+        ],
+        "summary": "Importer Son",
+        "description": "Son importé en corps brut, posé sur la première piste audio libre à `position_s`.",
+        "operationId": "importer_son_api_projets__projet_id__sons_put",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          },
+          {
+            "name": "position_s",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "default": 0.0,
+              "title": "Position S"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/video/estimation": {
+      "get": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Estimer Video",
+        "operationId": "estimer_video_api_projets__projet_id__video_estimation_get",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimationVideo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/projets/{projet_id}/exports": {
+      "get": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Lister Exports",
+        "operationId": "lister_exports_api_projets__projet_id__exports_get",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExportProjet"
+                  },
+                  "title": "Response Lister Exports Api Projets  Projet Id  Exports Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Lancer Export",
+        "operationId": "lancer_export_api_projets__projet_id__exports_post",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportEntree"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportProjet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionEntree": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/TypeAction"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "clip_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clip Id"
+          },
+          "reglages": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Reglages"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "title": "ActionEntree"
+      },
+      "ActionProgrammee": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "projet_id": {
+            "type": "string",
+            "title": "Projet Id"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TypeAction"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "clip_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clip Id"
+          },
+          "reglages": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Reglages"
+          },
+          "statut": {
+            "$ref": "#/components/schemas/StatutAction"
+          },
+          "cree_le": {
+            "type": "string",
+            "title": "Cree Le"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "projet_id",
+          "type",
+          "plan_id",
+          "clip_id",
+          "reglages",
+          "statut",
+          "cree_le"
+        ],
+        "title": "ActionProgrammee"
+      },
+      "Analyse": {
+        "properties": {
+          "bpm": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Bpm"
+          },
+          "temps_forts": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Temps Forts"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            },
+            "type": "array",
+            "title": "Sections"
+          },
+          "voix": {
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            },
+            "type": "array",
+            "title": "Voix"
+          },
+          "lignes": {
+            "items": {
+              "$ref": "#/components/schemas/LigneParoles"
+            },
+            "type": "array",
+            "title": "Lignes"
+          },
+          "simule": {
+            "type": "boolean",
+            "title": "Simule",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "bpm",
+          "temps_forts",
+          "sections",
+          "voix",
+          "lignes",
+          "simule"
+        ],
+        "title": "Analyse"
+      },
+      "Brief-Input": {
+        "properties": {
+          "ambiance": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Ambiance",
+            "default": ""
+          },
+          "genre": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Genre",
+            "default": ""
+          },
+          "envies": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Envies",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Brief"
+      },
+      "Brief-Output": {
+        "properties": {
+          "ambiance": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Ambiance",
+            "default": ""
+          },
+          "genre": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Genre",
+            "default": ""
+          },
+          "envies": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Envies",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ambiance",
+          "genre",
+          "envies"
+        ],
+        "title": "Brief"
+      },
+      "ChoixPrise": {
+        "properties": {
+          "prise_id": {
+            "type": "string",
+            "title": "Prise Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "prise_id"
+        ],
+        "title": "ChoixPrise"
+      },
+      "ChoixSortie": {
+        "properties": {
+          "sortie_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sortie Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ChoixSortie"
+      },
+      "Clip": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "piste": {
+            "type": "string",
+            "pattern": "^(V[1-9][0-9]*|A[0-9]+)$",
+            "title": "Piste"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "fichier_audio": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fichier Audio"
+          },
+          "position_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Position S"
+          },
+          "entree_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Entree S",
+            "default": 0
+          },
+          "sortie_s": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Sortie S"
+          },
+          "verrou_chanson": {
+            "type": "boolean",
+            "title": "Verrou Chanson",
+            "default": false
+          },
+          "etat": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EtatClip"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "progression": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Progression"
+          },
+          "volume": {
+            "type": "number",
+            "maximum": 2.0,
+            "minimum": 0.0,
+            "title": "Volume",
+            "default": 1.0
+          },
+          "fondu_entree_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Fondu Entree S",
+            "default": 0
+          },
+          "fondu_sortie_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Fondu Sortie S",
+            "default": 0
+          },
+          "duree_s": {
+            "type": "number",
+            "title": "Duree S",
+            "readOnly": true
+          },
+          "fin_s": {
+            "type": "number",
+            "title": "Fin S",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "piste",
+          "plan_id",
+          "fichier_audio",
+          "position_s",
+          "entree_s",
+          "sortie_s",
+          "verrou_chanson",
+          "etat",
+          "progression",
+          "volume",
+          "fondu_entree_s",
+          "fondu_sortie_s",
+          "duree_s",
+          "fin_s"
+        ],
+        "title": "Clip"
+      },
+      "ClipModification": {
+        "properties": {
+          "piste": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(V[1-9][0-9]*|A[0-9]+)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Piste"
+          },
+          "position_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position S"
+          },
+          "entree_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entree S"
+          },
+          "sortie_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sortie S"
+          },
+          "verrou_chanson": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verrou Chanson"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 2.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          },
+          "fondu_entree_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fondu Entree S"
+          },
+          "fondu_sortie_s": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fondu Sortie S"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ClipModification",
+        "description": "Champs modifiables d'un clip de timeline ; None = inchangé."
+      },
+      "CompatibiliteMoteur": {
+        "properties": {
+          "moteur": {
+            "$ref": "#/components/schemas/MoteurVideo"
+          },
+          "compatible": {
+            "type": "boolean",
+            "title": "Compatible"
+          },
+          "images": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Images"
+          },
+          "duree_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duree S"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "avertissement": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avertissement"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "moteur",
+          "compatible",
+          "images",
+          "duree_s",
+          "note",
+          "avertissement"
+        ],
+        "title": "CompatibiliteMoteur"
+      },
+      "Concept": {
+        "properties": {
+          "titre": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Titre"
+          },
+          "pitch": {
+            "type": "string",
+            "title": "Pitch"
+          },
+          "arc": {
+            "type": "string",
+            "title": "Arc",
+            "default": ""
+          },
+          "traitement": {
+            "type": "string",
+            "title": "Traitement",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "titre",
+          "pitch",
+          "arc",
+          "traitement"
+        ],
+        "title": "Concept"
+      },
+      "Coupe": {
+        "properties": {
+          "temps_s": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Temps S"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "temps_s"
+        ],
+        "title": "Coupe"
+      },
+      "Definition": {
+        "type": "string",
+        "enum": [
+          "480p",
+          "544p",
+          "720p",
+          "1080p"
+        ],
+        "title": "Definition"
+      },
+      "EstimationVideo": {
+        "properties": {
+          "plans": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Plans"
+          },
+          "octets_necessaires": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Octets Necessaires"
+          },
+          "octets_libres": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Octets Libres"
+          },
+          "suffisant": {
+            "type": "boolean",
+            "title": "Suffisant"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "plans",
+          "octets_necessaires",
+          "octets_libres",
+          "suffisant"
+        ],
+        "title": "EstimationVideo"
+      },
+      "EtapePostProd": {
+        "type": "string",
+        "enum": [
+          "flashvsr",
+          "dlss5"
+        ],
+        "title": "EtapePostProd"
+      },
+      "EtatClip": {
+        "type": "string",
+        "enum": [
+          "prevu",
+          "en_file",
+          "en_rendu",
+          "brut",
+          "upscale",
+          "dlss5",
+          "echec"
+        ],
+        "title": "EtatClip"
+      },
+      "EtatConnecteur": {
+        "properties": {
+          "nom": {
+            "type": "string",
+            "title": "Nom"
+          },
+          "voie": {
+            "$ref": "#/components/schemas/Voie"
+          },
+          "etat": {
+            "$ref": "#/components/schemas/EtatMoteur"
+          },
+          "empreinte_vram_mo": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Empreinte Vram Mo"
+          },
+          "vram_residuelle_mo": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Vram Residuelle Mo"
+          },
+          "simule": {
+            "type": "boolean",
+            "title": "Simule",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "nom",
+          "voie",
+          "etat",
+          "empreinte_vram_mo",
+          "vram_residuelle_mo",
+          "simule"
+        ],
+        "title": "EtatConnecteur"
+      },
+      "EtatDirector": {
+        "properties": {
+          "analyse": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Analyse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "brief": {
+            "$ref": "#/components/schemas/Brief-Output"
+          },
+          "concepts": {
+            "items": {
+              "$ref": "#/components/schemas/Concept"
+            },
+            "type": "array",
+            "title": "Concepts"
+          },
+          "concept_retenu": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Concept Retenu"
+          },
+          "chat": {
+            "items": {
+              "$ref": "#/components/schemas/MessageChat"
+            },
+            "type": "array",
+            "title": "Chat"
+          },
+          "en_attente": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "En Attente"
+          },
+          "erreurs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Erreurs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "analyse",
+          "brief",
+          "concepts",
+          "concept_retenu",
+          "chat",
+          "en_attente",
+          "erreurs"
+        ],
+        "title": "EtatDirector"
+      },
+      "EtatFile": {
+        "properties": {
+          "gpu_occupe_par": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpu Occupe Par"
+          },
+          "en_marche": {
+            "type": "boolean",
+            "title": "En Marche",
+            "default": false
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/Job"
+            },
+            "type": "array",
+            "title": "Jobs"
+          },
+          "connecteurs": {
+            "items": {
+              "$ref": "#/components/schemas/EtatConnecteur"
+            },
+            "type": "array",
+            "title": "Connecteurs"
+          },
+          "vram_totale_mo": {
+            "type": "integer",
+            "title": "Vram Totale Mo",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "gpu_occupe_par",
+          "en_marche",
+          "jobs",
+          "connecteurs",
+          "vram_totale_mo"
+        ],
+        "title": "EtatFile"
+      },
+      "EtatMoteur": {
+        "type": "string",
+        "enum": [
+          "arrete",
+          "demarre",
+          "charge"
+        ],
+        "title": "EtatMoteur"
+      },
+      "EtatMoteurInstalle": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "libelle": {
+            "type": "string",
+            "title": "Libelle"
+          },
+          "requis": {
+            "type": "boolean",
+            "title": "Requis"
+          },
+          "etat": {
+            "type": "string",
+            "title": "Etat"
+          },
+          "version_attendue": {
+            "type": "string",
+            "title": "Version Attendue"
+          },
+          "espace_mo": {
+            "type": "integer",
+            "title": "Espace Mo"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "progression": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Progression"
+          },
+          "etape": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Etape"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "journal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Journal"
+          },
+          "connecte": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Connecte"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "libelle",
+          "requis",
+          "etat",
+          "version_attendue",
+          "espace_mo",
+          "note",
+          "progression",
+          "etape",
+          "message",
+          "journal",
+          "connecte"
+        ],
+        "title": "EtatMoteurInstalle",
+        "description": "État d'installation d'un moteur (écran « Moteurs »)."
+      },
+      "EtatMoteurs": {
+        "properties": {
+          "moteurs": {
+            "items": {
+              "$ref": "#/components/schemas/EtatMoteurInstalle"
+            },
+            "type": "array",
+            "title": "Moteurs"
+          },
+          "requis_manquants": {
+            "type": "boolean",
+            "title": "Requis Manquants"
+          },
+          "mode_demo": {
+            "type": "boolean",
+            "title": "Mode Demo"
+          },
+          "en_cours": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "En Cours"
+          },
+          "redemarrage_requis": {
+            "type": "boolean",
+            "title": "Redemarrage Requis",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "moteurs",
+          "requis_manquants",
+          "mode_demo",
+          "en_cours",
+          "redemarrage_requis"
+        ],
+        "title": "EtatMoteurs"
+      },
+      "EtatPhase": {
+        "type": "string",
+        "enum": [
+          "a_faire",
+          "en_cours",
+          "a_valider",
+          "termine",
+          "echec"
+        ],
+        "title": "EtatPhase"
+      },
+      "ExportEntree": {
+        "properties": {
+          "interpolation_60fps": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interpolation 60Fps"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ExportEntree"
+      },
+      "ExportProjet": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "cree_le": {
+            "type": "string",
+            "title": "Cree Le"
+          },
+          "statut": {
+            "$ref": "#/components/schemas/StatutTraitement"
+          },
+          "interpolation_60fps": {
+            "type": "boolean",
+            "title": "Interpolation 60Fps"
+          },
+          "duree_s": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Duree S"
+          },
+          "fichier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fichier"
+          },
+          "fichier_60fps": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fichier 60Fps"
+          },
+          "erreur": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Erreur"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "cree_le",
+          "statut",
+          "interpolation_60fps",
+          "duree_s",
+          "fichier",
+          "fichier_60fps",
+          "erreur"
+        ],
+        "title": "ExportProjet"
+      },
+      "FicheBibliotheque": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "$ref": "#/components/schemas/TypeFiche"
+          },
+          "nom": {
+            "type": "string",
+            "title": "Nom"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/ImageFiche"
+            },
+            "type": "array",
+            "title": "Images"
+          },
+          "projets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Projets"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "nom",
+          "description",
+          "images",
+          "projets"
+        ],
+        "title": "FicheBibliotheque"
+      },
+      "FicheEntree": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/TypeFiche"
+          },
+          "nom": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Nom"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "type",
+          "nom"
+        ],
+        "title": "FicheEntree"
+      },
+      "FormatImage": {
+        "type": "string",
+        "enum": [
+          "16:9",
+          "9:16"
+        ],
+        "title": "FormatImage"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImageFiche": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "$ref": "#/components/schemas/RoleImageFiche"
+          },
+          "chemin": {
+            "type": "string",
+            "title": "Chemin"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "chemin"
+        ],
+        "title": "ImageFiche"
+      },
+      "InfosMateriel": {
+        "properties": {
+          "gpu": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpu"
+          },
+          "vram_mo": {
+            "type": "integer",
+            "title": "Vram Mo"
+          },
+          "vram_go": {
+            "type": "number",
+            "title": "Vram Go"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "suffisant": {
+            "type": "boolean",
+            "title": "Suffisant"
+          },
+          "avertissement": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avertissement"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "gpu",
+          "vram_mo",
+          "vram_go",
+          "source",
+          "suffisant",
+          "avertissement"
+        ],
+        "title": "InfosMateriel",
+        "description": "Carte graphique détectée (ou repli sur la carte de référence)."
+      },
+      "InfosRendu": {
+        "properties": {
+          "format": {
+            "$ref": "#/components/schemas/FormatImage"
+          },
+          "moteurs": {
+            "items": {
+              "$ref": "#/components/schemas/InfosRenduMoteur"
+            },
+            "type": "array",
+            "title": "Moteurs"
+          },
+          "fps_maitre": {
+            "type": "integer",
+            "title": "Fps Maitre"
+          },
+          "largeur_sortie": {
+            "type": "integer",
+            "title": "Largeur Sortie"
+          },
+          "hauteur_sortie": {
+            "type": "integer",
+            "title": "Hauteur Sortie"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "format",
+          "moteurs",
+          "fps_maitre",
+          "largeur_sortie",
+          "hauteur_sortie"
+        ],
+        "title": "InfosRendu"
+      },
+      "InfosRenduMoteur": {
+        "properties": {
+          "moteur": {
+            "$ref": "#/components/schemas/MoteurVideo"
+          },
+          "definition": {
+            "type": "string",
+            "title": "Definition"
+          },
+          "largeur": {
+            "type": "integer",
+            "title": "Largeur"
+          },
+          "hauteur": {
+            "type": "integer",
+            "title": "Hauteur"
+          },
+          "images_max": {
+            "type": "integer",
+            "title": "Images Max"
+          },
+          "duree_max_s": {
+            "type": "number",
+            "title": "Duree Max S"
+          },
+          "saute_flashvsr": {
+            "type": "boolean",
+            "title": "Saute Flashvsr"
+          },
+          "definitions_permises": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Definitions Permises"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "moteur",
+          "definition",
+          "largeur",
+          "hauteur",
+          "images_max",
+          "duree_max_s",
+          "saute_flashvsr",
+          "definitions_permises"
+        ],
+        "title": "InfosRenduMoteur"
+      },
+      "Job": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "voie": {
+            "$ref": "#/components/schemas/Voie"
+          },
+          "connecteur": {
+            "type": "string",
+            "title": "Connecteur"
+          },
+          "modele": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modele"
+          },
+          "statut": {
+            "$ref": "#/components/schemas/StatutJob"
+          },
+          "tentatives": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Tentatives",
+            "default": 0
+          },
+          "progression": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progression",
+            "default": 0
+          },
+          "libelle": {
+            "type": "string",
+            "title": "Libelle",
+            "default": ""
+          },
+          "erreur": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Erreur"
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase"
+          },
+          "ordre": {
+            "type": "integer",
+            "title": "Ordre",
+            "default": 0
+          },
+          "regime": {
+            "$ref": "#/components/schemas/Regime",
+            "default": "phases"
+          },
+          "projet_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Projet Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "voie",
+          "connecteur",
+          "modele",
+          "statut",
+          "tentatives",
+          "progression",
+          "libelle",
+          "erreur",
+          "phase",
+          "ordre",
+          "regime",
+          "projet_id"
+        ],
+        "title": "Job"
+      },
+      "Lancement": {
+        "properties": {
+          "jobs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Jobs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "jobs"
+        ],
+        "title": "Lancement"
+      },
+      "LigneParoles": {
+        "properties": {
+          "texte": {
+            "type": "string",
+            "title": "Texte"
+          },
+          "debut_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Debut S"
+          },
+          "fin_s": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Fin S"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "texte",
+          "debut_s",
+          "fin_s"
+        ],
+        "title": "LigneParoles"
+      },
+      "ManifesteModule": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "nom": {
+            "type": "string",
+            "title": "Nom"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "phases": {
+            "items": {
+              "$ref": "#/components/schemas/PhaseModule"
+            },
+            "type": "array",
+            "title": "Phases"
+          },
+          "schema_reglages": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Schema Reglages"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "nom",
+          "description",
+          "phases",
+          "schema_reglages"
+        ],
+        "title": "ManifesteModule"
+      },
+      "MessageChat": {
+        "properties": {
+          "auteur": {
+            "type": "string",
+            "enum": [
+              "utilisateur",
+              "opus"
+            ],
+            "title": "Auteur"
+          },
+          "texte": {
+            "type": "string",
+            "title": "Texte"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "auteur",
+          "texte"
+        ],
+        "title": "MessageChat"
+      },
+      "MessageEntree": {
+        "properties": {
+          "texte": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Texte"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "texte"
+        ],
+        "title": "MessageEntree"
+      },
+      "MoteurImage": {
+        "type": "string",
+        "enum": [
+          "qwen_image_edit_2511_20B_fp8_lightning_8step",
+          "codex_imagegen"
+        ],
+        "title": "MoteurImage"
+      },
+      "MoteurVideo": {
+        "type": "string",
+        "enum": [
+          "minimax_h3",
+          "ltx2_22B_distilled_1_1_omninft",
+          "ltx2_25_omninft"
+        ],
+        "title": "MoteurVideo"
+      },
+      "Nettoyage": {
+        "properties": {
+          "prises_supprimees": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Prises Supprimees"
+          },
+          "octets_liberes": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Octets Liberes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "prises_supprimees",
+          "octets_liberes"
+        ],
+        "title": "Nettoyage"
+      },
+      "NouvellePiste": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/TypePiste"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "title": "NouvellePiste"
+      },
+      "PhaseModule": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "nom": {
+            "type": "string",
+            "title": "Nom"
+          },
+          "arret_possible": {
+            "type": "boolean",
+            "title": "Arret Possible"
+          },
+          "connecteurs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Connecteurs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "nom",
+          "arret_possible",
+          "connecteurs"
+        ],
+        "title": "PhaseModule"
+      },
+      "Plan": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "indice": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Indice"
+          },
+          "role": {
+            "$ref": "#/components/schemas/RolePlan"
+          },
+          "debut_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Debut S"
+          },
+          "images": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Images"
+          },
+          "fps": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Fps"
+          },
+          "paroles": {
+            "type": "string",
+            "title": "Paroles",
+            "default": ""
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "moteur_image": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MoteurImage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "moteur_video": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MoteurVideo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fiches": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fiches"
+          },
+          "prise_active_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prise Active Id"
+          },
+          "prompt_image": {
+            "type": "string",
+            "title": "Prompt Image",
+            "default": ""
+          },
+          "prompt_video": {
+            "type": "string",
+            "title": "Prompt Video",
+            "default": ""
+          },
+          "prompt_son": {
+            "type": "string",
+            "title": "Prompt Son",
+            "default": ""
+          },
+          "image_depart": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Depart"
+          },
+          "duree_s": {
+            "type": "number",
+            "title": "Duree S",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "indice",
+          "role",
+          "debut_s",
+          "images",
+          "fps",
+          "paroles",
+          "description",
+          "moteur_image",
+          "moteur_video",
+          "fiches",
+          "prise_active_id",
+          "prompt_image",
+          "prompt_video",
+          "prompt_son",
+          "image_depart",
+          "duree_s"
+        ],
+        "title": "Plan"
+      },
+      "PlanModification": {
+        "properties": {
+          "moteur_video": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MoteurVideo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "moteur_image": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MoteurImage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "prompt_image": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Image"
+          },
+          "prompt_video": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Video"
+          },
+          "prompt_son": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Son"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PlanModification",
+        "description": "Champs modifiables d'un plan pendant la validation ; None = inchangé."
+      },
+      "Prise": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "plan_id": {
+            "type": "string",
+            "title": "Plan Id"
+          },
+          "numero": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Numero"
+          },
+          "moteur": {
+            "$ref": "#/components/schemas/MoteurVideo"
+          },
+          "graine": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Graine"
+          },
+          "statut": {
+            "$ref": "#/components/schemas/StatutTraitement"
+          },
+          "fichier_brut": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fichier Brut"
+          },
+          "erreur": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Erreur"
+          },
+          "sorties": {
+            "items": {
+              "$ref": "#/components/schemas/SortiePostProd"
+            },
+            "type": "array",
+            "title": "Sorties"
+          },
+          "sortie_active_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sortie Active Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "plan_id",
+          "numero",
+          "moteur",
+          "graine",
+          "statut",
+          "fichier_brut",
+          "erreur",
+          "sorties",
+          "sortie_active_id"
+        ],
+        "title": "Prise"
+      },
+      "Projet": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "titre": {
+            "type": "string",
+            "title": "Titre"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "format": {
+            "$ref": "#/components/schemas/FormatImage"
+          },
+          "cree_le": {
+            "type": "string",
+            "title": "Cree Le"
+          },
+          "recette_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recette Id"
+          },
+          "chanson": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chanson"
+          },
+          "paroles": {
+            "type": "string",
+            "title": "Paroles",
+            "default": ""
+          },
+          "duree_chanson_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duree Chanson S"
+          },
+          "casting": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Casting"
+          },
+          "etat_phases": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EtatPhase"
+            },
+            "type": "object",
+            "title": "Etat Phases"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/Plan"
+            },
+            "type": "array",
+            "title": "Plans"
+          },
+          "prises": {
+            "items": {
+              "$ref": "#/components/schemas/Prise"
+            },
+            "type": "array",
+            "title": "Prises"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "titre",
+          "module",
+          "format",
+          "cree_le",
+          "recette_id",
+          "chanson",
+          "paroles",
+          "duree_chanson_s",
+          "casting",
+          "etat_phases",
+          "plans",
+          "prises"
+        ],
+        "title": "Projet"
+      },
+      "ProjetEntree": {
+        "properties": {
+          "titre": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Titre"
+          },
+          "format": {
+            "$ref": "#/components/schemas/FormatImage",
+            "default": "16:9"
+          },
+          "recette_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recette Id"
+          },
+          "paroles": {
+            "type": "string",
+            "maxLength": 20000,
+            "title": "Paroles",
+            "default": ""
+          },
+          "casting": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Casting"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "titre"
+        ],
+        "title": "ProjetEntree"
+      },
+      "Recette": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "nom": {
+            "type": "string",
+            "title": "Nom"
+          },
+          "valeurs": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Valeurs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "module",
+          "nom",
+          "valeurs"
+        ],
+        "title": "Recette"
+      },
+      "RecetteEntree": {
+        "properties": {
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "nom": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Nom"
+          },
+          "valeurs": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Valeurs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "module",
+          "nom"
+        ],
+        "title": "RecetteEntree"
+      },
+      "Regime": {
+        "type": "string",
+        "enum": [
+          "phases",
+          "carte"
+        ],
+        "title": "Regime"
+      },
+      "ResumeProjet": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "titre": {
+            "type": "string",
+            "title": "Titre"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "format": {
+            "$ref": "#/components/schemas/FormatImage"
+          },
+          "cree_le": {
+            "type": "string",
+            "title": "Cree Le"
+          },
+          "nb_plans": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Nb Plans"
+          },
+          "recette_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recette Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "titre",
+          "module",
+          "format",
+          "cree_le",
+          "nb_plans",
+          "recette_id"
+        ],
+        "title": "ResumeProjet"
+      },
+      "RoleImageFiche": {
+        "type": "string",
+        "enum": [
+          "portrait_pied",
+          "gros_plan",
+          "reference"
+        ],
+        "title": "RoleImageFiche"
+      },
+      "RolePlan": {
+        "type": "string",
+        "enum": [
+          "chante",
+          "coupe"
+        ],
+        "title": "RolePlan"
+      },
+      "Sante": {
+        "properties": {
+          "statut": {
+            "type": "string",
+            "title": "Statut"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "schema_db": {
+            "type": "integer",
+            "title": "Schema Db"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "statut",
+          "version",
+          "schema_db"
+        ],
+        "title": "Sante"
+      },
+      "Section": {
+        "properties": {
+          "nom": {
+            "type": "string",
+            "title": "Nom"
+          },
+          "debut_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Debut S"
+          },
+          "fin_s": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Fin S"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "nom",
+          "debut_s",
+          "fin_s"
+        ],
+        "title": "Section"
+      },
+      "Segment": {
+        "properties": {
+          "debut_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Debut S"
+          },
+          "fin_s": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Fin S"
+          },
+          "clip_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clip Id"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "fichier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fichier"
+          },
+          "source_debut_s": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Source Debut S",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "debut_s",
+          "fin_s",
+          "clip_id",
+          "plan_id",
+          "fichier",
+          "source_debut_s"
+        ],
+        "title": "Segment",
+        "description": "Morceau de la projection de la timeline : ce qui est vu, et exporté, entre deux instants."
+      },
+      "SortiePostProd": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "etape": {
+            "$ref": "#/components/schemas/EtapePostProd"
+          },
+          "ordre": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Ordre"
+          },
+          "statut": {
+            "$ref": "#/components/schemas/StatutTraitement"
+          },
+          "fichier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fichier"
+          },
+          "reglages": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Reglages"
+          },
+          "erreur": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Erreur"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "etape",
+          "ordre",
+          "statut",
+          "fichier",
+          "reglages",
+          "erreur"
+        ],
+        "title": "SortiePostProd"
+      },
+      "StatutAction": {
+        "type": "string",
+        "enum": [
+          "programmee",
+          "lancee"
+        ],
+        "title": "StatutAction"
+      },
+      "StatutJob": {
+        "type": "string",
+        "enum": [
+          "en_file",
+          "en_cours",
+          "termine",
+          "echec",
+          "annule"
+        ],
+        "title": "StatutJob"
+      },
+      "StatutTraitement": {
+        "type": "string",
+        "enum": [
+          "en_file",
+          "en_cours",
+          "termine",
+          "echec"
+        ],
+        "title": "StatutTraitement"
+      },
+      "Timeline": {
+        "properties": {
+          "projet_id": {
+            "type": "string",
+            "title": "Projet Id"
+          },
+          "fps_maitre": {
+            "type": "integer",
+            "title": "Fps Maitre",
+            "default": 24
+          },
+          "duree_chanson_s": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Duree Chanson S"
+          },
+          "pistes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pistes"
+          },
+          "clips": {
+            "items": {
+              "$ref": "#/components/schemas/Clip"
+            },
+            "type": "array",
+            "title": "Clips"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "projet_id",
+          "fps_maitre",
+          "duree_chanson_s",
+          "pistes",
+          "clips"
+        ],
+        "title": "Timeline"
+      },
+      "TypeAction": {
+        "type": "string",
+        "enum": [
+          "refaire",
+          "passe_dlss5",
+          "bruitage",
+          "changer_moteur"
+        ],
+        "title": "TypeAction"
+      },
+      "TypeFiche": {
+        "type": "string",
+        "enum": [
+          "personnage",
+          "decor",
+          "style"
+        ],
+        "title": "TypeFiche"
+      },
+      "TypePiste": {
+        "type": "string",
+        "enum": [
+          "video",
+          "audio"
+        ],
+        "title": "TypePiste"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "Voie": {
+        "type": "string",
+        "enum": [
+          "gpu",
+          "cloud"
+        ],
+        "title": "Voie"
+      }
+    }
+  }
+}
