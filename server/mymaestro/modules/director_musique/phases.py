@@ -15,6 +15,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from ...contrat.modeles import (
+    CastingModification,
     EtatPhase,
     MoteurImage,
     MoteurVideo,
@@ -88,6 +89,13 @@ def _projet(cx: sqlite3.Connection, projet_id: str) -> Projet:
     if projet is None or projet.module != MODULE:
         raise KeyError(projet_id)
     return projet
+
+
+def _casting_pour_llm(cx: sqlite3.Connection, projet: Projet) -> list[dict[str, str]]:
+    """Le casting tel que le LLM doit le connaître : un identifiant seul ne lui dit pas qui est à l'image."""
+    fiches = {f.id: f for f in depot.lister_fiches(cx)}
+    return [{"id": f.id, "nom": f.nom, "type": f.type.value, "description": f.description}
+            for f in (fiches.get(fiche_id) for fiche_id in projet.casting) if f is not None]
 
 
 def _ecriture(cx: sqlite3.Connection, projet_id: str) -> dict[str, Any]:
@@ -195,6 +203,7 @@ def lancer_phase(ctx: Contexte, projet_id: str, phase: str) -> None:
         projet = _projet(cx, projet_id)
         regl = reglages(cx, projet)
         concept = _concept_retenu(_ecriture(cx, projet_id))
+        casting = _casting_pour_llm(cx, projet)
     if phase == "analyse":
         if not projet.chanson or not projet.duree_chanson_s:
             raise ErreurPhase("Chanson manquante : téléverse-la d'abord")
@@ -224,7 +233,7 @@ def lancer_phase(ctx: Contexte, projet_id: str, phase: str) -> None:
             _enfiler(ctx, projet_id, phase, lancement, f"prompts.{etape}", connecteur=connecteur, voie=voie,
                      modele=choix.modele, indice=indice, libelle=f"Prompts {LIBELLES_ETAPE[etape]}",
                      donnees={"etape": etape, "reflexion": choix.reflexion, "plans": plans,
-                              "prompt": gabarits.prompts(etape, plans, concept, ReponsePrompts),
+                              "prompt": gabarits.prompts(etape, plans, concept, casting, ReponsePrompts),
                               "schema": ReponsePrompts.model_json_schema()})
     elif phase == "images":
         if projet.etat_phases.get("prompts") is not EtatPhase.TERMINE:
@@ -638,7 +647,7 @@ def ecrire_decoupage(ctx: Contexte, projet_id: str) -> None:
         projet = _projet(cx, projet_id)
         donnees = depot.lire_donnees_module(cx, projet_id)
         regl = reglages(cx, projet)
-        fiches = {f.id: f.type.value for f in depot.lister_fiches(cx)}
+        casting = _casting_pour_llm(cx, projet)
     _exiger_ecriture_ouverte(projet)
     ecriture = dict(donnees.get("ecriture") or {})
     concept = _concept_retenu(ecriture)
@@ -655,10 +664,9 @@ def ecrire_decoupage(ctx: Contexte, projet_id: str) -> None:
         except ValueError as exc:  # recette enregistrée sur une autre carte
             raise ErreurPhase(str(exc)) from None
         bornes[role] = f"{g.duree_min_s:.1f} à {g.duree_max_s:.1f} s ({moteur.value}, {definition.value})"
-    casting = [{"id": fiche_id, "type": fiches.get(fiche_id, "")} for fiche_id in projet.casting]
     _enfiler_ecriture(ctx, projet, "ecriture.decoupage", "Écriture · découpage",
                       {"analyse": analyse, "concept": concept, "casting": casting, "duree_s": projet.duree_chanson_s,
-                       "prompt": gabarits.decoupage(projet, analyse, concept, ecriture.get("chat") or [], bornes, ReponseDecoupage),
+                       "prompt": gabarits.decoupage(projet, analyse, concept, ecriture.get("chat") or [], bornes, casting, ReponseDecoupage),
                        "schema": ReponseDecoupage.model_json_schema()})
 
 
@@ -696,6 +704,12 @@ def modifier_plan(ctx: Contexte, projet_id: str, plan_id: str, modification: Pla
                 raise ErreurPhase(f"Moteur incompatible : {verdict.note}")
             champs.update(moteur_video=modification.moteur_video, images=verdict.images,
                           fps=grille(modification.moteur_video, projet.format, definition).fps)
+        if modification.fiches is not None:
+            fiches = list(dict.fromkeys(modification.fiches))
+            hors_casting = [f for f in fiches if f not in projet.casting]
+            if hors_casting:
+                raise ErreurPhase(f"Fiches hors du casting du projet : {', '.join(hors_casting)} (ajoute-les d'abord au casting)")
+            depot.remplacer_fiches_plan(cx, plan_id, fiches)
         if champs:
             depot.maj_plan(cx, plan_id, **champs)
         plan_relu = next(p for p in _projet(cx, projet_id).plans if p.id == plan_id)
@@ -705,6 +719,24 @@ def modifier_plan(ctx: Contexte, projet_id: str, plan_id: str, modification: Pla
 
         timeline.ajuster_au_plan(ctx, projet_id, plan_relu)
     return plan_relu
+
+
+def modifier_casting(ctx: Contexte, projet_id: str, modification: CastingModification) -> Projet:
+    """Casting après la création. Une fiche retirée quitte les plans ; sur demande, les fiches nouvelles
+    entrent dans tous les plans existants (à retirer ensuite, plan par plan, là où elles ne sont pas à l'image)."""
+    casting = list(dict.fromkeys(modification.casting))
+    with ctx.base.transaction() as cx:
+        projet = _projet(cx, projet_id)
+        connues = {f.id for f in depot.lister_fiches(cx)}
+        inconnues = [f for f in casting if f not in connues]
+        if inconnues:
+            raise ErreurPhase(f"Fiches introuvables : {', '.join(inconnues)}")
+        nouvelles = [f for f in casting if f not in projet.casting]
+        depot.remplacer_casting(cx, projet_id, casting)
+        if modification.ajouter_aux_plans and nouvelles:
+            for plan in projet.plans:
+                depot.remplacer_fiches_plan(cx, plan.id, list(dict.fromkeys([*(f for f in plan.fiches if f in casting), *nouvelles])))
+        return _projet(cx, projet_id)
 
 
 def refaire_image(ctx: Contexte, projet_id: str, plan_id: str) -> None:

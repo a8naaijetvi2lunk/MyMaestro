@@ -128,3 +128,13 @@ def test_chanson_verrouillee_une_fois_l_analyse_lancee(client):
     client.post(f"/api/projets/{projet_id}/phases/analyse/lancer")
     reponse = client.put(f"/api/projets/{projet_id}/chanson", content=b"RIFF", headers={"Content-Type": "audio/wav"})
     assert reponse.status_code == 409 and "verrouillée" in reponse.json()["detail"]
+
+
+def test_casting_modifiable_par_l_api(client):
+    projet_id = _creer(client, casting=[]).json()["id"]
+    assert client.put(f"/api/projets/{projet_id}/casting", json={"casting": ["fiche-lina"]}).json()["casting"] == ["fiche-lina"]
+    assert client.get(f"/api/projets/{projet_id}").json()["casting"] == ["fiche-lina"]
+    refus = client.put(f"/api/projets/{projet_id}/casting", json={"casting": ["fiche-absente"]})
+    assert refus.status_code == 409 and "fiche-absente" in refus.json()["detail"]
+    assert client.put("/api/projets/inconnu/casting", json={"casting": []}).status_code == 404
+    assert client.patch(f"/api/projets/{projet_id}/plans/inconnu", json={"fiches": []}).status_code == 404

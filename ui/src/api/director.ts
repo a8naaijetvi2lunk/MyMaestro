@@ -24,6 +24,8 @@ export const actionsDirector = {
   decoupage: (projetId: string) => exiger(api.POST("/api/projets/{projet_id}/ecriture/decoupage", projet(projetId))),
   lignes: (projetId: string, lignes: LigneParoles[]) =>
     exiger(api.PUT("/api/projets/{projet_id}/analyse/lignes", { ...projet(projetId), body: lignes })),
+  casting: (projetId: string, casting: string[], ajouterAuxPlans: boolean) =>
+    exiger(api.PUT("/api/projets/{projet_id}/casting", { ...projet(projetId), body: { casting, ajouter_aux_plans: ajouterAuxPlans } })),
   modifierPlan: (projetId: string, planId: string, modification: PlanModification) =>
     exiger(api.PATCH("/api/projets/{projet_id}/plans/{plan_id}", { ...plan(projetId, planId), body: modification })),
   refaireImage: (projetId: string, planId: string) =>

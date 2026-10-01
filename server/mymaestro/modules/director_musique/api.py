@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse
 from ...contrat.modeles import (
     ActionEntree,
     ActionProgrammee,
+    CastingModification,
     ChoixPrise,
     ChoixSortie,
     ClipModification,
@@ -179,6 +180,11 @@ def lire_compatibilites(projet_id: str, request: Request) -> dict[str, list[Comp
     with ctx.base.transaction() as cx:
         definitions = phases.reglages(cx, projet).rendu.definitions()
     return {plan.id: compatibilites(plan, projet.format, definitions) for plan in projet.plans}
+
+
+@routeur.put("/projets/{projet_id}/casting")
+def modifier_casting(projet_id: str, modification: CastingModification, request: Request) -> Projet:
+    return _executer(phases.modifier_casting, _ctx(request), projet_id, modification)
 
 
 @routeur.patch("/projets/{projet_id}/plans/{plan_id}")

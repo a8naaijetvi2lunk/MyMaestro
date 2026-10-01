@@ -448,6 +448,13 @@ class ProjetEntree(Modele):
     casting: list[str] = Field(default_factory=list)
 
 
+class CastingModification(Modele):
+    """Casting d'un projet après sa création : une fiche retirée quitte aussi les plans."""
+
+    casting: list[str]
+    ajouter_aux_plans: bool = Field(False, description="Les fiches nouvelles du casting entrent dans tous les plans existants")
+
+
 class PlanModification(Modele):
     """Champs modifiables d'un plan pendant la validation ; None = inchangé."""
 
@@ -456,6 +463,7 @@ class PlanModification(Modele):
     prompt_image: str | None = None
     prompt_video: str | None = None
     prompt_son: str | None = None
+    fiches: list[str] | None = Field(None, description="Fiches du casting à l'image : leurs images servent de références")
 
 
 class CompatibiliteMoteur(Modele):

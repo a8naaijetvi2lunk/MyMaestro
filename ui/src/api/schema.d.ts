@@ -609,6 +609,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/projets/{projet_id}/casting": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Modifier Casting */
+        put: operations["modifier_casting_api_projets__projet_id__casting_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/projets/{projet_id}/plans/{plan_id}": {
         parameters: {
             query?: never;
@@ -992,6 +1009,20 @@ export interface components {
              * @default
              */
             envies: string;
+        };
+        /**
+         * CastingModification
+         * @description Casting d'un projet après sa création : une fiche retirée quitte aussi les plans.
+         */
+        CastingModification: {
+            /** Casting */
+            casting: string[];
+            /**
+             * Ajouter Aux Plans
+             * @description Les fiches nouvelles du casting entrent dans tous les plans existants
+             * @default false
+             */
+            ajouter_aux_plans: boolean;
         };
         /** ChoixPrise */
         ChoixPrise: {
@@ -1536,6 +1567,11 @@ export interface components {
             prompt_video?: string | null;
             /** Prompt Son */
             prompt_son?: string | null;
+            /**
+             * Fiches
+             * @description Fiches du casting à l'image : leurs images servent de références
+             */
+            fiches?: string[] | null;
         };
         /** Prise */
         Prise: {
@@ -2883,6 +2919,41 @@ export interface operations {
                     "application/json": {
                         [key: string]: components["schemas"]["CompatibiliteMoteur"][];
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    modifier_casting_api_projets__projet_id__casting_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                projet_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CastingModification"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Projet"];
                 };
             };
             /** @description Validation Error */

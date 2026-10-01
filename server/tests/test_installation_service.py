@@ -543,6 +543,23 @@ def test_llm_ecriture_aligne_le_modele_sur_le_fournisseur():
     assert LlmEcriture(fournisseur="claude", modele="claude-opus-5-5").modele == "claude-opus-5-5"
 
 
+def test_llm_etape_aligne_le_modele_sur_le_fournisseur():
+    from mymaestro.modules.director_musique.reglages import LlmEtape, ReglagesDirector
+
+    assert LlmEtape(fournisseur="bonsai").modele == config.BONSAI_MODELE
+    assert LlmEtape(fournisseur="bonsai", modele="opus").modele == config.BONSAI_MODELE
+    assert LlmEtape(fournisseur="claude", modele="bonsai2-27b-pq2").modele == "sonnet"
+    assert LlmEtape(fournisseur="claude", modele="opus").modele == "opus"
+    # recette réelle du 2026-10-01 : fournisseur passé à Claude, modèle Bonsai resté → la CLI claude refusait le modèle
+    llm = {
+        "ecriture": {"fournisseur": "claude", "modele": "claude-opus-5-5", "effort": "high", "nombre_concepts": 3},
+        "prompts_image": {"fournisseur": "claude", "modele": "sonnet", "reflexion": False},
+        "prompts_video": {"fournisseur": "claude", "modele": "bonsai2-27b-pq2", "reflexion": False},
+        "prompts_son": {"fournisseur": "claude", "modele": "sonnet", "reflexion": False},
+    }
+    assert ReglagesDirector.model_validate({"llm": llm}).llm.prompts_video.modele == "sonnet"
+
+
 def test_prevol_converti_en_erreur_de_phase(monkeypatch):
     """phases._prevol convertit MoteurNonInstalle en ErreurPhase (409), comme MemoireInsuffisante."""
     from mymaestro.core.contexte import Contexte

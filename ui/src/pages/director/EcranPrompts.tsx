@@ -14,6 +14,7 @@ import { formatDecimal, formatDuree, libelleRole } from "@/lib/format"
 import { naviguer } from "@/lib/use-route"
 import { cn } from "@/lib/utils"
 
+import { CarteCasting, ChoixFiches } from "./CarteCasting"
 import { BarreActions, type ProprietesEcran } from "./commun"
 
 const MOTEURS_VIDEO: MoteurVideo[] = ["minimax_h3", "ltx2_22B_distilled_1_1_omninft", "ltx2_25_omninft"]
@@ -29,6 +30,7 @@ export function EcranPrompts({ projet, director, recharger }: ProprietesEcran) {
   const { donnees: compatibilites } = useDonnees(`compat:${projet.id}:${signature}`, () => actionsDirector.compatibilites(projet.id))
   const { donnees: fiches } = useDonnees("bibliotheque", () => exiger(api.GET("/api/bibliotheque")))
   const etat = projet.etat_phases.prompts
+  const casting = (fiches ?? []).filter((f) => projet.casting.includes(f.id))
 
   if (projet.plans.length === 0) {
     return (
@@ -54,6 +56,7 @@ export function EcranPrompts({ projet, director, recharger }: ProprietesEcran) {
       {etat === "en_cours" && <p className="m-0 text-sm text-[color:var(--v-text-2)]">Prompts en cours d'écriture dans la file…</p>}
       {director?.erreurs.prompts && <Alerte>{director.erreurs.prompts}</Alerte>}
       {director?.erreurs.bascule && <Alerte>Bascule sur Claude : {director.erreurs.bascule}</Alerte>}
+      <CarteCasting key={projet.casting.join("|")} projet={projet} fiches={fiches ?? []} executer={executer} />
       <section aria-label="Plans" className="overflow-x-auto rounded-[var(--r-card)] bg-card px-4 py-3 text-card-foreground">
         <table className="w-full min-w-[1080px] table-fixed border-collapse text-[13px]">
           <colgroup>
@@ -90,7 +93,7 @@ export function EcranPrompts({ projet, director, recharger }: ProprietesEcran) {
                 {ouvert === plan.id && (
                   <tr>
                     <td colSpan={7} className="pb-3">
-                      <DetailPlan plan={plan} fiches={fiches ?? []} modifier={(modification) => modifier(plan.id, modification)} />
+                      <DetailPlan plan={plan} casting={casting} occupe={enCours} modifier={(modification) => modifier(plan.id, modification)} />
                     </td>
                   </tr>
                 )}
@@ -203,17 +206,33 @@ function LignePlan({
   )
 }
 
-function DetailPlan({ plan, fiches, modifier }: { plan: Plan; fiches: FicheBibliotheque[]; modifier: (modification: PlanModification) => void }) {
-  const references = fiches.filter((f) => plan.fiches.includes(f.id))
+function DetailPlan({
+  plan,
+  casting,
+  occupe,
+  modifier,
+}: {
+  plan: Plan
+  casting: FicheBibliotheque[]
+  occupe: boolean
+  modifier: (modification: PlanModification) => void
+}) {
+  const references = casting.filter((f) => plan.fiches.includes(f.id))
+  const basculer = (id: string) => modifier({ fiches: plan.fiches.includes(id) ? plan.fiches.filter((f) => f !== id) : [...plan.fiches, id] })
   return (
     <div className="grid gap-3.5 rounded-[14px] bg-[var(--v-beige-2)] p-3.5 [box-shadow:inset_0_0_0_1px_var(--v-beige)] lg:grid-cols-3">
       <ChampPrompt key={`v-${plan.prompt_video}`} libelle="Prompt vidéo" valeur={plan.prompt_video} enregistrer={(v) => modifier({ prompt_video: v })} />
       <ChampPrompt key={`i-${plan.prompt_image}`} libelle="Prompt image" valeur={plan.prompt_image} enregistrer={(v) => modifier({ prompt_image: v })} />
       <div className="flex flex-col gap-2">
         <ChampPrompt key={`s-${plan.prompt_son}`} libelle="Prompt son" valeur={plan.prompt_son} enregistrer={(v) => modifier({ prompt_son: v })} />
-        <span className="text-xs font-semibold text-[color:var(--v-text-3)]">Références et audio</span>
+        <span className="text-xs font-semibold text-[color:var(--v-text-3)]">À l'image (références)</span>
+        {casting.length === 0 ? (
+          <span className="text-xs">Casting vide : ajoute des fiches au casting, en haut de l'écran.</span>
+        ) : (
+          <ChoixFiches fiches={casting} choisies={plan.fiches} basculer={basculer} occupe={occupe} />
+        )}
         <div className="flex flex-wrap gap-2">
-          {references.length === 0 && <span className="text-xs">Aucune fiche liée à ce plan.</span>}
+          {references.length === 0 && <span className="text-xs">Aucune fiche à l'image : pas de référence pour l'image de ce plan.</span>}
           {references.flatMap((fiche) =>
             fiche.images.length > 0
               ? fiche.images.map((image) => (

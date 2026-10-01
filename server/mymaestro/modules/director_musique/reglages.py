@@ -48,6 +48,7 @@ class Reglages(BaseModel):
 
 
 MODELE_ECRITURE_CLAUDE = "claude-opus-5-5"
+MODELE_PROMPTS_CLAUDE = "sonnet"
 
 
 class Fournisseur(StrEnum):
@@ -109,12 +110,21 @@ class LlmEtape(Reglages):
     fournisseur: Fournisseur = Field(
         Fournisseur.CLAUDE, title="Fournisseur", json_schema_extra=interface({"claude": "Claude", "bonsai": "Bonsai 2"})
     )
-    modele: str = Field("sonnet", title="Modèle", description="sonnet ou opus pour Claude, bonsai2-27b-pq2 pour Bonsai")
+    modele: str = Field(MODELE_PROMPTS_CLAUDE, title="Modèle", description="sonnet ou opus pour Claude, bonsai2-27b-pq2 pour Bonsai")
     reflexion: bool = Field(
         False,
         title="Réflexion (Bonsai)",
         description="Désactivée par défaut : même conformité JSON, 16 s au lieu de 26 à 112 s (tâche 0)",
     )
+
+    @model_validator(mode="after")
+    def _aligner_le_modele(self) -> "LlmEtape":
+        """Comme pour l'écriture : Bonsai → son modèle ; Claude avec un modèle Bonsai → Sonnet."""
+        if self.fournisseur is Fournisseur.BONSAI:
+            self.modele = config.BONSAI_MODELE
+        elif self.modele == config.BONSAI_MODELE:
+            self.modele = MODELE_PROMPTS_CLAUDE
+        return self
 
 
 class Llm(Reglages):

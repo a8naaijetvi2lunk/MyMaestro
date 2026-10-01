@@ -1,7 +1,7 @@
 import { Send } from "lucide-react"
 import { useId, useState, type FormEvent } from "react"
 
-import { api, type Brief, type Concept, type FicheBibliotheque, type MessageChat, type Projet } from "@/api/client"
+import { api, type Brief, type Concept, type MessageChat, type Projet } from "@/api/client"
 import { actionsDirector } from "@/api/director"
 import { useDonnees } from "@/api/hooks"
 import { exiger } from "@/api/requetes"
@@ -14,10 +14,10 @@ import { formatDecimal, formatDuree, libelleMoteurVideo, libelleRole } from "@/l
 import { naviguer } from "@/lib/use-route"
 import { cn } from "@/lib/utils"
 
+import { CarteCasting } from "./CarteCasting"
 import type { ProprietesEcran } from "./commun"
 
 const PASTILLES_CONCEPT = ["bg-[var(--v-pink)]", "bg-[var(--v-blue)]", "bg-[var(--v-olive)]", "bg-[var(--v-yellow)]", "bg-[var(--v-pink)]"]
-const TEINTES_FICHE: Record<string, "pink-soft" | "blue-soft" | "olive-soft"> = { personnage: "pink-soft", decor: "blue-soft", style: "olive-soft" }
 
 export function EcranEcriture({ projet, director, recharger }: ProprietesEcran) {
   const { erreur, enCours, executer } = useAction(recharger)
@@ -35,8 +35,6 @@ export function EcranEcriture({ projet, director, recharger }: ProprietesEcran) 
       </Carte>
     )
   }
-
-  const casting = (fiches ?? []).filter((f) => projet.casting.includes(f.id))
 
   async function envoyer(evenement?: FormEvent) {
     evenement?.preventDefault()
@@ -57,9 +55,9 @@ export function EcranEcriture({ projet, director, recharger }: ProprietesEcran) 
         <CarteBrief
           key={JSON.stringify(director?.brief ?? {})}
           brief={director?.brief ?? { ambiance: "", genre: "", envies: "" }}
-          casting={casting}
           enregistrer={(brief) => executer(() => actionsDirector.brief(projet.id, brief))}
         />
+        <CarteCasting key={projet.casting.join("|")} projet={projet} fiches={fiches ?? []} executer={executer} />
         <h2 className="m-0 mt-1 text-xs font-semibold uppercase tracking-[.06em] text-[color:var(--v-text-3)]">
           {concepts.length > 1 ? `${concepts.length} concepts contrastés` : concepts.length === 1 ? "1 concept" : "Concepts"}
         </h2>
@@ -105,7 +103,7 @@ export function EcranEcriture({ projet, director, recharger }: ProprietesEcran) 
   )
 }
 
-function CarteBrief({ brief, casting, enregistrer }: { brief: Brief; casting: FicheBibliotheque[]; enregistrer: (brief: Brief) => Promise<boolean> }) {
+function CarteBrief({ brief, enregistrer }: { brief: Brief; enregistrer: (brief: Brief) => Promise<boolean> }) {
   const [edition, setEdition] = useState(false)
   const [brouillon, setBrouillon] = useState<Brief>(brief)
   const champs: { cle: keyof Brief; libelle: string }[] = [
@@ -152,12 +150,6 @@ function CarteBrief({ brief, casting, enregistrer }: { brief: Brief; casting: Fi
               <dd className="m-0 mt-0.5">{brief[cle] || "—"}</dd>
             </div>
           ))}
-          <div>
-            <dt className="text-[color:var(--v-text-3)]">Casting</dt>
-            <dd className="m-0 mt-1 flex flex-wrap gap-1.5">
-              {casting.length === 0 ? "—" : casting.map((fiche) => <Badge key={fiche.id} variant={TEINTES_FICHE[fiche.type] ?? "default"}>{fiche.nom}</Badge>)}
-            </dd>
-          </div>
         </dl>
       )}
     </Carte>

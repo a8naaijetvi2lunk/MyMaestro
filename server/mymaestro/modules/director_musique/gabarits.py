@@ -37,13 +37,14 @@ def chat(historique: list[dict[str, str]], concept: dict[str, Any] | None, messa
 
 
 def decoupage(projet: Projet, analyse: dict[str, Any], concept: dict[str, Any] | None, chat: list[dict[str, str]],
-              bornes: dict[str, str], schema: Any) -> str:
+              bornes: dict[str, str], casting: list[dict[str, str]], schema: Any) -> str:
     return (
         "Découpe la chanson en plans, du début à la fin, sans trou ni chevauchement.\n"
         "Pour CHAQUE plan : rôle (chante si le chanteur est à l'image et chante, coupe sinon), début et fin en secondes, "
         "paroles couvertes, description visuelle, identifiants des fiches du casting à l'image.\n"
         f"Durées permises par rôle : {json.dumps(bornes, ensure_ascii=False)}. Respecte-les plan par plan.\n"
-        f"Durée de la chanson : {projet.duree_chanson_s} s. Casting : {json.dumps(projet.casting)}.\n"
+        f"Durée de la chanson : {projet.duree_chanson_s} s.\n"
+        f"Casting (fiches de la bibliothèque) : {json.dumps(casting, ensure_ascii=False)}\n"
         f"Analyse : {json.dumps(analyse, ensure_ascii=False)}\n"
         f"Concept : {json.dumps(concept, ensure_ascii=False)}\nÉchanges : {json.dumps(chat, ensure_ascii=False)}\n"
         f"Réponds uniquement en JSON conforme à ce schéma : {_schema(schema)}"
@@ -57,10 +58,12 @@ CONSIGNES_ETAPE = {
 }
 
 
-def prompts(etape: str, plans: list[dict[str, Any]], concept: dict[str, Any] | None, schema: Any) -> str:
+def prompts(etape: str, plans: list[dict[str, Any]], concept: dict[str, Any] | None, casting: list[dict[str, str]],
+            schema: Any) -> str:
     return (
         f"Pour CHAQUE plan ci-dessous, écris {CONSIGNES_ETAPE[etape]}.\n"
         f"Concept : {json.dumps(concept, ensure_ascii=False)}\n"
+        f"Casting (les « fiches » de chaque plan renvoient à ces identifiants) : {json.dumps(casting, ensure_ascii=False)}\n"
         f"Plans : {json.dumps(plans, ensure_ascii=False)}\n"
         f"Réponds uniquement en JSON conforme à ce schéma : {_schema(schema)}"
     )

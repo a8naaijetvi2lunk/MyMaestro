@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "MyMaestro",
-    "version": "0.1.0"
+    "version": "0.1.1"
   },
   "paths": {
     "/api/sante": {
@@ -1540,6 +1540,58 @@
         }
       }
     },
+    "/api/projets/{projet_id}/casting": {
+      "put": {
+        "tags": [
+          "director"
+        ],
+        "summary": "Modifier Casting",
+        "operationId": "modifier_casting_api_projets__projet_id__casting_put",
+        "parameters": [
+          {
+            "name": "projet_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Projet Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CastingModification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Projet"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/projets/{projet_id}/plans/{plan_id}": {
       "patch": {
         "tags": [
@@ -2778,6 +2830,30 @@
           "envies"
         ],
         "title": "Brief"
+      },
+      "CastingModification": {
+        "properties": {
+          "casting": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Casting"
+          },
+          "ajouter_aux_plans": {
+            "type": "boolean",
+            "title": "Ajouter Aux Plans",
+            "description": "Les fiches nouvelles du casting entrent dans tous les plans existants",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "casting"
+        ],
+        "title": "CastingModification",
+        "description": "Casting d'un projet après sa création : une fiche retirée quitte aussi les plans."
       },
       "ChoixPrise": {
         "properties": {
@@ -4392,6 +4468,21 @@
               }
             ],
             "title": "Prompt Son"
+          },
+          "fiches": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fiches",
+            "description": "Fiches du casting à l'image : leurs images servent de références"
           }
         },
         "additionalProperties": false,

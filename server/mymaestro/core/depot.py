@@ -498,6 +498,24 @@ def remplacer_plans(cx: sqlite3.Connection, projet_id: str, plans: list[Plan]) -
     _inserer_plans(cx, projet_id, plans)
 
 
+def remplacer_casting(cx: sqlite3.Connection, projet_id: str, casting: list[str]) -> None:
+    """Nouveau casting ; une fiche qui en sort quitte aussi les plans du projet."""
+    cx.execute("DELETE FROM casting WHERE projet_id = ?", (projet_id,))
+    for fiche_id in casting:
+        cx.execute("INSERT INTO casting (projet_id, fiche_id) VALUES (?, ?)", (projet_id, fiche_id))
+    cx.execute(
+        f"DELETE FROM plans_fiches WHERE plan_id IN (SELECT id FROM plans WHERE projet_id = ?) "
+        f"AND fiche_id NOT IN ({', '.join('?' * len(casting))})",  # liste vide permise par SQLite : tout part
+        (projet_id, *casting),
+    )
+
+
+def remplacer_fiches_plan(cx: sqlite3.Connection, plan_id: str, fiches: list[str]) -> None:
+    cx.execute("DELETE FROM plans_fiches WHERE plan_id = ?", (plan_id,))
+    for fiche_id in fiches:
+        cx.execute("INSERT INTO plans_fiches (plan_id, fiche_id) VALUES (?, ?)", (plan_id, fiche_id))
+
+
 def maj_plan(cx: sqlite3.Connection, plan_id: str, **champs: Any) -> None:
     inconnus = set(champs) - CHAMPS_PLAN_MODIFIABLES
     if inconnus:

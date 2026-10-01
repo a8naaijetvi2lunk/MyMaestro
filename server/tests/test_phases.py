@@ -5,7 +5,7 @@ import pytest
 from mymaestro import modules
 from mymaestro.connectors.simule import registre_simule
 from mymaestro.connectors.base import ErreurMoteur
-from mymaestro.contrat.modeles import EtatPhase, FormatImage, MoteurVideo, PlanModification, ProjetEntree, StatutJob
+from mymaestro.contrat.modeles import CastingModification, EtatPhase, FormatImage, MoteurVideo, PlanModification, ProjetEntree, StatutJob
 from mymaestro.core import amorce, depot, empreintes
 from mymaestro.core.contexte import Contexte
 from mymaestro.core.db import Base
@@ -705,3 +705,78 @@ def test_image_de_depart_a_la_definition_du_moteur_video_du_plan(monde):
     assert {p.moteur_video for p in projet.plans} >= {MoteurVideo.LTX23, MoteurVideo.H3}
     for plan in projet.plans:
         assert (jobs[plan.id].donnees["largeur"], jobs[plan.id].donnees["hauteur"]) == attendu[plan.moteur_video]
+
+
+# --- Casting modifiable après la création (premier vrai test, 2026-10-01) ------------------------------
+
+
+def _fiches_des_plans(contexte, projet_id):
+    return {p.id: p.fiches for p in _projet(contexte, projet_id).plans}
+
+
+def test_casting_modifiable_apres_creation(monde):
+    contexte, _, projet_id = monde
+    projet = phases.modifier_casting(contexte, projet_id, CastingModification(casting=["fiche-neon", "fiche-lina", "fiche-neon"]))
+    assert projet.casting == ["fiche-neon", "fiche-lina"]
+    assert _projet(contexte, projet_id).casting == ["fiche-neon", "fiche-lina"]
+    with pytest.raises(phases.ErreurPhase, match="fiche-absente"):
+        phases.modifier_casting(contexte, projet_id, CastingModification(casting=["fiche-lina", "fiche-absente"]))
+    assert _projet(contexte, projet_id).casting == ["fiche-neon", "fiche-lina"]
+    with pytest.raises(KeyError):
+        phases.modifier_casting(contexte, "projet-inconnu", CastingModification(casting=[]))
+
+
+def test_fiche_retiree_du_casting_quitte_les_plans(monde):
+    contexte, ordonnanceur, projet_id = monde
+    _jusqu_a_l_ecriture_validable(contexte, ordonnanceur, projet_id)
+    assert any("fiche-toit" in fiches for fiches in _fiches_des_plans(contexte, projet_id).values())
+    phases.modifier_casting(contexte, projet_id, CastingModification(casting=["fiche-lina"]))
+    assert not any("fiche-toit" in fiches for fiches in _fiches_des_plans(contexte, projet_id).values())
+    assert any("fiche-lina" in fiches for fiches in _fiches_des_plans(contexte, projet_id).values())
+
+
+def test_fiche_ajoutee_au_casting_et_a_tous_les_plans_sert_de_reference(monde, tmp_path):
+    contexte, ordonnanceur, projet_id = monde
+    _jusqu_a_l_ecriture_validable(contexte, ordonnanceur, projet_id)
+    plan = _projet(contexte, projet_id).plans[0]
+    phases.modifier_plan(contexte, projet_id, plan.id, PlanModification(fiches=[]))  # retirée à la main d'un plan…
+    phases.modifier_casting(contexte, projet_id, CastingModification(casting=["fiche-lina", "fiche-toit", "fiche-neon"], ajouter_aux_plans=True))
+    fiches = _fiches_des_plans(contexte, projet_id)
+    assert all("fiche-neon" in f for f in fiches.values())  # seule la fiche nouvelle entre dans tous les plans
+    assert fiches[plan.id] == ["fiche-neon"]  # …et pas remise par l'ajout d'une autre
+    phases.valider_phase(contexte, projet_id, "ecriture")
+    ordonnanceur.vider()
+    phases.valider_phase(contexte, projet_id, "prompts")
+    job = next(j for j in contexte.file.lister_projet(projet_id) if j.donnees.get("tache") == "images.plan" and j.donnees["plan_id"] == plan.id)
+    assert job.donnees["references"] == [str((tmp_path / "medias" / "bibliotheque/fiche-neon/reference.png").resolve())]
+
+
+def test_fiches_d_un_plan_modifiables_dans_le_casting_seulement(monde):
+    contexte, ordonnanceur, projet_id = monde
+    _jusqu_a_l_ecriture_validable(contexte, ordonnanceur, projet_id)
+    plan = _projet(contexte, projet_id).plans[0]
+    relu = phases.modifier_plan(contexte, projet_id, plan.id, PlanModification(fiches=["fiche-toit", "fiche-lina", "fiche-toit"]))
+    assert relu.fiches == ["fiche-toit", "fiche-lina"]
+    with pytest.raises(phases.ErreurPhase, match="casting"):
+        phases.modifier_plan(contexte, projet_id, plan.id, PlanModification(fiches=["fiche-neon"]))
+    assert _fiches_des_plans(contexte, projet_id)[plan.id] == ["fiche-toit", "fiche-lina"]
+    autre = _projet(contexte, projet_id).plans[1]
+    assert phases.modifier_plan(contexte, projet_id, autre.id, PlanModification(prompt_image="x")).fiches == autre.fiches  # None = inchangé
+
+
+def test_le_llm_connait_le_casting_par_son_nom(monde):
+    contexte, ordonnanceur, projet_id = monde
+    _jusqu_a_l_ecriture_validable(contexte, ordonnanceur, projet_id)
+    decoupage = next(j for j in contexte.file.lister_projet(projet_id) if j.donnees.get("tache") == "ecriture.decoupage")
+    assert "Lina" in decoupage.donnees["prompt"] and "personnage" in decoupage.donnees["prompt"]
+    phases.valider_phase(contexte, projet_id, "ecriture")
+    prompts_image = next(j for j in contexte.file.lister_projet(projet_id) if j.donnees.get("tache") == "prompts.image")
+    assert "Lina" in prompts_image.donnees["prompt"]
+
+
+def test_casting_vide_retire_toutes_les_fiches_des_plans(monde):
+    contexte, ordonnanceur, projet_id = monde
+    _jusqu_a_l_ecriture_validable(contexte, ordonnanceur, projet_id)
+    assert any(_fiches_des_plans(contexte, projet_id).values())
+    phases.modifier_casting(contexte, projet_id, CastingModification(casting=[]))
+    assert not any(_fiches_des_plans(contexte, projet_id).values())
